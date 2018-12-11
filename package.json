@@ -1,0 +1,43 @@
+{
+  "name": "node-red-contrib-light",
+  "version": "0.9.4",
+  "description": "Nodes to help automate light states, dimming, colour and other controls.",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "node-red": {
+    "nodes": {
+      "AnamicoLights": "light/lights.js",
+      "AnamicoLightUpdates": "light/updates.js",
+      "AnamicoLightChanged": "light/lightChanged.js",
+      "AnamicoChangeLight": "light/changeLight.js"
+    }
+  },
+  "author": "Andrew",
+  "contributors": [
+    {
+      "name": "Andrew",
+      "email": "roo@roo.emu.id.au"
+    }
+  ],
+  "license": "MIT",
+  "dependencies": {
+    "async": "^2.6.1"
+  },
+  "keywords": [
+    "node-red",
+    "light",
+    "colour",
+    "color",
+    "dim",
+    "hue",
+    "saturation",
+    "brightness",
+    "automation"
+  ],
+  "bugs": {
+    "url": "https://github.com/Anamico/node-red-contrib-light/issues"
+  },
+  "homepage": "https://github.com/Anamico/node-red-contrib-light#readme",
+  "repository": "https://github.com/Anamico/node-red-contrib-light"
+}

@@ -1,0 +1,41 @@
+<script type="text/javascript">
+    RED.nodes.registerType('AnamicoLightUpdates', {
+        category: 'lighting',
+        color: '#B9FFFF',
+        defaults: {
+            name: { value : "" },
+            lights: { type: 'AnamicoLights', required: true }
+        },
+        inputs: 1,
+        outputs: 0,
+        inputLabels: "instructions",
+        icon: "api.png",
+        label: function() {
+            return this.name || "Updates";
+        },
+        paletteLabel: 'Updates'
+    });
+</script>
+
+<script type="text/x-red" data-template-name="AnamicoLightUpdates">
+    <div class="form-row">
+        <label for="node-input-id"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-id" placeholder="Id">
+    </div>
+
+    <div class="form-tips">Tip: The light Id can be any string, and uniquely identifies THIS particular light, ie: "Kitchen" or "Lounge Downlight 3".</div>
+
+    <div class="form-row">
+        <label for="node-input-lights"><i class="fa fa-server"></i> Lights</label>
+        <input type="text" id="node-input-lights" placeholder="Lights">
+    </div>
+
+    <div class="form-tips">Tip: create a single 'lights' node to basically be a single property, then use it for all lights.</div>
+
+</script>
+
+<script type="text/x-red" data-help-name="AnamicoLightUpdates">
+    <h3>Configure Lights</h3>
+    <p>This node accepts a bunch of different commands to configure a light or groups of lights.</p>
+    <h3>Todo</h3>
+</script>

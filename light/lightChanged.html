@@ -1,0 +1,49 @@
+<script type="text/javascript">
+    RED.nodes.registerType('AnamicoLightChanged', {
+        category: 'lighting',
+        color: '#B9FFFF',
+        defaults: {
+            name: { value : '', required: true },
+            lights: { type: 'AnamicoLights', required: true },
+            mode: { value : 'Basic', required : true }
+        },
+        inputs: 0,
+        outputs: 1,
+        outputLabels: "new state",
+        icon: "bulb.png",
+        label: function() {
+            return this.name || "Unnamed";
+        },
+        paletteLabel: 'Light Changed'
+    });
+</script>
+
+<script type="text/x-red" data-template-name="AnamicoLightChanged">
+    <div class="form-row">
+        <label for="node-input-name"><i class="icon-tag"></i> Name</label>
+        <input type="text" id="node-input-name" placeholder="Name">
+    </div>
+
+    <div class="form-tips">Tip: The light name can be any string, and uniquely identifies THIS particular light, ie: "Kitchen" or "Lounge Downlight 3".</div>
+
+    <div class="form-row">
+        <label for="node-input-lights"><i class="fa fa-server"></i> Lights</label>
+        <input type="text" id="node-input-lights" placeholder="Lights">
+    </div>
+
+    <div class="form-tips">Tip: create a single 'lights' node to basically be a single property, then use it for all lights.</div>
+
+    <div class="form-row"> &nbsp;</div>
+    <select id="node-input-mode">
+        <option value='Basic'>Basic</option>
+        <option value='Hue'>Hue</option>
+        <option value='LIFX'>LIFX</option>
+    </select>
+
+    <div class="form-tips">Tip: Select the right type of light so you can connect it directly and not have to convert any values.</div>
+</script>
+
+<script type="text/x-red" data-help-name="AnamicoLightChanged">
+    <h3>Light State Trigger</h3>
+    <p>This node emits a payload in the selected format to set the attached light parameters.</p>
+</script>
