@@ -9,63 +9,98 @@ module.exports = function(RED) {
         var node = this;
 
         node.stateListeners = {};
-
         node.nodeId = node.id.replace(/\./g, '_');
-        console.log('node id ', node.nodeId);
-        console.log('SecuritySystemCurrentState_' + node.nodeId);
 
-        // this.alarmState = node.context().global.get('SecuritySystemCurrentState_' + node.nodeId) || 0;
-        // this.alarmType = node.context().global.get('SecuritySystemAlarmType_' + node.nodeId) || 0;
-        // this.isAlarm = node.alarmState === 4;
-
-        this.setAlarmState = function(alarmState) {
-            // node.alarmState = alarmState;
-            // node.isAlarm = alarmState === 4;
-            // node.context().global.set('SecuritySystemCurrentState_' + node.nodeId, alarmState);
+        node.getLightState = function(lightName) {
+            node.context().global.get(node.nodeId + '_' + lightname); // todo: need an initial default state?
         };
 
-        this.setAlarmType = function(alarmType) {
-            // this.alarmType = alarmType;
-            // node.context().global.set('SecuritySystemAlarmType_' + node.nodeId, alarmType);
+        node.setLightState = function(lightName, state) {
+            node.context().global.set(node.nodeId + '_' + lightname, state);
         };
 
         /**
-         * Conditionally trigger an alarm
+         * track light state
          *
-         * todo: persist alarm state and zone/etc with handle to node so we can update alarm state on panel mode changes
+         * persist new light state if something changes it
+         * this is ALREADY in node-red-contrib-node-lifx format from the listener node which will convert it from other formats
+         * see: https://flows.nodered.org/node/node-red-contrib-node-lifx
+         *
+         * "payload": {
+         *      "on": true,
+         *      "reachable": true,
+         *      "bri": 57,
+         *      "hsv": [ 169, 37, 57 ],
+         *      "rgb": [ 91, 145, 135 ],
+         *      "hex": "5C9187",
+         *      "color": "cadetblue",
+         *      "kelvin": 2513,
+         *      "mired": 397
+         * },
          *
          * @param msg
          * @param callback
          */
-        this.sensor = function(msg, callback) {
-            // if (!msg.payload || !msg.payload.zone) {
-            //     node.error("missing payload.zone", msg);
-            //     callback(false);
-            //     return false;
-            // }
-            // if (!msg.payload || !msg.payload.modes) {
-            //     node.error("missing payload.modes", msg);
-            //     callback(false);
-            //     return false;
-            // }
-            // // node.log(msg.payload.modes);
-            // // node.log(msg.payload.modes.indexOf(node.alarmState));
-            // if (msg.payload.modes.indexOf(node.alarmState) < 0) {
-            //     callback(false);
-            //     return;
-            // }
-            // node.setState(msg);
-            callback(true); // alarm triggered
+         node.lightChanged = function(lightNode, msg, callback) {
+
+             var state = node.getLightState(lightNode.name) || {};
+             var changed = false;
+
+             if (msg.payload.on) {
+                 changed = msg.payload.on != state.on;
+                 state.on = msg.payload.on;
+             }
+             if (msg.payload.reachable) {
+                 changed = changed || (msg.payload.reachable != state.reachable);
+                 state.reachable = msg.payload.reachable;
+             }
+             if (msg.payload.bri) {
+                 changed = changed || (msg.payload.bri != state.bri);
+                 state.bri = msg.payload.bri;
+             }
+             if (msg.payload.hsv) {
+                 changed = changed || (msg.payload.hsv != state.hsv); // todo: fix array comparison
+                 state.hsv = msg.payload.hsv;
+             }
+             if (msg.payload.rgb) {
+                 changed = changed || (msg.payload.rgb != state.rgb); // todo: fix array comparison
+                 state.rgb = msg.payload.rgb;
+             }
+             if (msg.payload.hex) {
+                 changed = changed || (msg.payload.hex != state.hex);
+                 state.hex = msg.payload.hex;
+             }
+             // todo: implement 'color' later?
+             // if (msg.payload.color) {
+             //     changed = changed || (msg.payload.on != state.on);
+             //     state.on = msg.payload.on;
+             // }
+             // if (msg.payload.kelvin) {
+             //     changed = changed || (msg.payload.on != state.on);
+             //     state.on = msg.payload.on;
+             // }
+             // if (msg.payload.mired) {
+             //     changed = changed || (msg.payload.on != state.on);
+             //     state.on = msg.payload.on;
+             // }
+
+             if (changed) {
+                 node.setLightState(lightNode.name, state);
+                 msg.changed = changed;
+             }
+             callback(null, msg);
         };
 
         /**
-         * Register a listener node to receive updates when the alarm state changes
+         * Register a listener node to receive updates when the light changes (Single Light)
          *
          * @param node
          * @param callback
          */
-        this.registerStateListener = function(listenerNode, callback) {
-            node.stateListeners[listenerNode.id] = callback;
+        node.registerStateListener = function(listenerNode, callback) {
+            var lightListeners = node.stateListeners[listenerNode.name] || {};
+            lightListeners[listenerNode.id] = callback;
+            node.stateListeners[listenerNode.name] = lightListeners;
 
             // also emit current state on registration (after delay of 100 msec?):
             // setTimeout(function() {
@@ -77,11 +112,7 @@ module.exports = function(RED) {
             //     // node.log(isAlarm);
             //     callback({
             //         payload: {
-            //             //SecuritySystemTargetState: localState,
-            //             SecuritySystemCurrentState: alarmState,
-            //             alarmState: [ 'Home', 'Away', 'Night', 'Off', 'Alarm' ][alarmState],
-            //             SecuritySystemAlarmType: alarmType,
-            //             isAlarm: node.isAlarm
+            //             new light state
             //         }
             //     });
             // }, 100);
@@ -92,118 +123,84 @@ module.exports = function(RED) {
          *
          * @param node
          */
-        this.deregisterStateListener = function(listenerNode) {
+        node.deregisterStateListener = function(listenerNode) {
             node.log('deregister: ' + listenerNode.id);
-            delete node.stateListeners[listenerNode.id];
+            // remove it from ALL possible locations
+            Object.keys(node.stateListeners).forEach(function(lightName) {
+                node.stateListeners[lightName] && node.stateListeners[lightName][listenerNode.id] && delete node.stateListeners[lightName][listenerNode.id];
+            });
         };
 
-        this.notifyChange = function (msg, fromHomekit) {
-            // if (fromHomekit) {
-            //     node.log("from homekit");
-            //     msg.payload.fromHomekit = true;
-            // } else {
-            //     node.log("local");
-            // }
-            // // node.log(JSON.stringify(msg,null,2));
-            // // node.log(JSON.stringify(node.stateListeners,null,2));
-            //
-            // async.each(node.stateListeners, function(listener, callback) {
-            //     listener(msg);
-            //     callback(null);
-            // });
-        };
 
         /**
-         * In response to a state change request, we do some checks and validations, and if OK, then we update the alarm panel state
-         * The state is persisted based on persistance of the global state.
+         * In response to an api call, we we make the changes to ALL lights as requested and notify them all
+         * The state is persisted based on persistence of the global state.
          *
+         * this accepts changes in node-red-contrib-node-lifx format with one additional field "lights", which identifies all the lights you wish to target
+         * see: https://flows.nodered.org/node/node-red-contrib-node-lifx
+         *
+         * "payload": {
+         *      "lights":   [ 'light1', 'light2', ... ],
+         *      "on":       true/false,
+         *      "red":      (0 - 255),
+         *      "green":    (0 - 255),
+         *      "blue":     (0 - 255),
+         *      "hex":      "5C9187",
+         *      "hue":      (0 - 360),
+         *      "sat":      (0 - 100),    (or "saturation")
+         *      "bri":      (0 - 100),    (percentage)
+         *      "cr":       (153 - 500),  (or 'mired' or 'mirek' - Mired color temperature)
+         *      "kelvin":   (2200-6500),  (kelvin colour temperature)
+         *      "duration": (ms)          (transition time)
+         * }
+         *
+         * PLUS we have incremental controls to "bump" the values from present. In this case, the first listed light is seen as the controller
+         * "payload": {
+         *     "bri_add":   +/- x% (eg -10) - this occurs over the given duration
+         * }
+         *
+         * todo: more complex programming options, so transitions for each light in a set based on an algorithm, or as determined by the
+         * "payload": {
+         *     effect: "throb", "cycle", "march",
+         *     decay: 1000 ms,
+         *     maybe allow { lightname: { params }, lightname: {params} as well ?}??
+         * }
          * @param msg
          * @param callback
          */
-        this.setState = function(msg, callback) {
+        node.api = function(msg, callback) {
 
-//             const fromHomekit = (msg.payload && msg.payload.fromHomekit) || false;
-//
-//             // only do something if we have been fed a new security state
-//             node.log('setState');
-//             node.log(JSON.stringify(msg,null,2));
-//
-//             if (!msg.payload) {
-//                 node.error('invalid payload', msg);
-//                 callback({
-//                     error: true,
-//                     label: "invalid payload"
-//                 });
-//                 return;
-//             }
-//
-//             const targetState = msg.payload.SecuritySystemTargetState;
-//             const currentState = msg.payload.SecuritySystemCurrentState;
-//             var newState = currentState !== undefined ? currentState : targetState;
-//             var newAlarmType = msg.payload.SecuritySystemAlarmType;
-//             var alarmType = newAlarmType !== undefined ? newAlarmType : node.alarmType;
-//
-// // look for alarms
-//             if (msg.payload.zone) {
-//                 if (msg.payload.modes.indexOf(node.alarmState) < 0) {
-//                     node.log('no alarm');
-//                     callback({
-//                         error: true,
-//                         label: "no alarm"
-//                     });
-//                     return
-//                 }
-//                 node.log('Alarm: ');
-//                 newState = 4;
-//                 alarmType = 1;
-//             }
-//
-//             node.log('newState: ' + newState + ' = ' + targetState + ' || ' + currentState);
-//             node.log('localState: ' + node.alarmState);
-//             node.log('alarmType: ' + alarmType + ' = ' + newAlarmType + ' || ' + node.alarmType);
-//
-//             if ((newState === undefined) && (newAlarmType === undefined)) {
-//                 node.error('invalid payload', msg);
-//                 callback({
-//                     error: true,
-//                     label: "invalid payload"
-//                 });
-//                 return;
-//             }
-//
-// // Has anything changed?
-//             if ((newState !== undefined ? newState : node.alarmState) !== 4 ) {
-//                 alarmType = 0
-//             }
-//             const alarmChanged = (node.alarmType != alarmType);
-//             const changed = (node.alarmState === undefined) || (node.alarmState != newState) || (node.alarmType === undefined)|| alarmChanged;
-//             // if (!changed) {
-//             //     node.log('no change');
-//             //     callback({
-//             //         label: node.alarmModes[node.alarmState]
-//             //     });
-//             //     return;
-//             // }
-//
-// // persist the new state
-//             node.setAlarmState(newState !== undefined ? newState : node.alarmState);
-//             node.setAlarmType(alarmType);
-//
-//             msg.payload = {
-//                 //SecuritySystemTargetState: global.SecuritySystemCurrentState,
-//                 SecuritySystemCurrentState: node.alarmState,
-//                 alarmState: node.alarmModes[node.alarmState]
-//             };
-//             msg.payload.isAlarm = node.isAlarm;
-//
-//             if (alarmChanged) {
-//                 msg.payload.SecuritySystemAlarmType = node.alarmType;
-//             }
-//
-//             node.notifyChange(msg, fromHomekit);
-            callback({
-                label: 'a' //node.alarmModes[node.alarmState]
-            });
+            const lightNames = msg.lights;  // this is ALWAYS an array, the caller is responsible for that precondition
+
+            if (!lightNames || !Array.isArray(lightNames)) {
+                node.error('msg.payload.lights : invalid array of names', msg);
+                return;
+            }
+
+            //
+            // collect current light states
+            //
+            var brightness = null;  // used for an incremental change
+
+            var lights = lightNames.reduce(function(memo, lightName) {
+                const state = node.getLightState(lightName);
+                var changed = false;
+                //
+                // make the changes requested
+                //
+
+
+                memo[lightName] = state;
+                // todo: we don't save the new state here do we? I think we need to be careful we don't clobber events coming from the light itself.
+
+                // tell all listeners about the new command for this light.
+                const listeners = node.stateListeners[lightName] || {};
+                Object.values(listeners).forEach(function(listener) {
+                    listener(state);
+                });
+            }, {});
+
+            callback(null, lights);
         };
     }
     RED.nodes.registerType("AnamicoLights", AnamicoLights);

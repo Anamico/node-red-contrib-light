@@ -8,35 +8,26 @@ module.exports = function(RED) {
         RED.nodes.createNode(this, config);
         this.configError = false;
         this._lights = RED.nodes.getNode(config.lights);
-
+        this.name = config.name;
         var node = this;
+
+        /**
+         * validate the configuration
+         */
+        if (!node.name || !node.name.length || node.name.length < 1) {
+            node.status({
+                fill:   "red",
+                shape:  "dot",
+                text:   "Missing Name"
+            });
+            return;
+        }
 
         /**
          * handle inputs
          */
-        // LIFX {
-        //      lightLabel: "Lifx"
-        //      on: true
-        //      hue: "21"
-        //      saturation: "30"
-        //      luminance: "100"
-        //      whiteColor: "3200"
-        //      fadeTime: "1"
-        // }
-        //
-        // HUE {
-        //      on: false
-        //      brightness: 0
-        //      reachable: true
-        //      rgb: array[3]
-        //      hex: "fff7f5"
-        //      color: "white"
-        //      colorTemp: 167
-        //      updated: "2018-12-11T22:52:42+10:00"
-        // }
-
         node.on('input', function(msg) {
-            node.log(node);
+            node.log(msg);
 
             // if (this.configError) { return; }  // ignore everything if in error state, can only redeploy to fix this state
             //
@@ -66,10 +57,11 @@ module.exports = function(RED) {
             // });
         });
 
+
         /**
          * listen for panel state changes
          */
-        node._lights && node._lights.registerStateListener(this, function(msg) {
+        node._lights && node._lights.registerStateListener(node, function(msg) {
             if (node.configError) { node._panel.deregisterStateListener(node); return; }   // ignore everything if in error state, can only redeploy to fix this state
             node.status({
                 fill: node._panel.isAlarm ? "red" : "green",

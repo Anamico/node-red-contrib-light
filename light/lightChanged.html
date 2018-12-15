@@ -12,7 +12,7 @@
         outputLabels: "new state",
         icon: "bulb.png",
         label: function() {
-            return this.name || "Unnamed";
+            return this.name || "Unnamed" + ' (' + this.mode + ')';
         },
         paletteLabel: 'Light Changed'
     });
@@ -24,21 +24,26 @@
         <input type="text" id="node-input-name" placeholder="Name">
     </div>
 
-    <div class="form-tips">Tip: The light name can be any string, and uniquely identifies THIS particular light, ie: "Kitchen" or "Lounge Downlight 3".</div>
+    <div class="form-tips">Tip: The light name can be any string, and uniquely identifies THIS particular light, ie: "Kitchen" or "Lounge Downlight 3". This is to identify this exact light,
+    it is NOT designed to use the same light name for more than one globe (and it will NOT work). You address group of lights using the array of lights in the updates node message.</div>
 
+    <div class="form-row"> &nbsp;</div>
     <div class="form-row">
         <label for="node-input-lights"><i class="fa fa-server"></i> Lights</label>
         <input type="text" id="node-input-lights" placeholder="Lights">
     </div>
 
-    <div class="form-tips">Tip: create a single 'lights' node to basically be a single property, then use it for all lights.</div>
+    <div class="form-tips">Tip: create a single 'lights' configuration node to basically be a single house if you want, then use it to manage all lights in that house.</div>
 
     <div class="form-row"> &nbsp;</div>
-    <select id="node-input-mode">
-        <option value='Basic'>Basic</option>
-        <option value='Hue'>Hue</option>
-        <option value='LIFX'>LIFX</option>
-    </select>
+    <div class="form-row">
+        <label for="node-input-mode"><i class="fa fa-lightbulb"></i> Mode</label>
+        <select id="node-input-mode">
+            <option value='Basic'>Basic</option>
+            <option value='Hue'>Hue</option>
+            <option value='LIFX'>LIFX</option>
+        </select>
+    </div>
 
     <div class="form-tips">Tip: Select the right type of light so you can connect it directly and not have to convert any values.</div>
 </script>
@@ -46,4 +51,12 @@
 <script type="text/x-red" data-help-name="AnamicoLightChanged">
     <h3>Light State Trigger</h3>
     <p>This node emits a payload in the selected format to set the attached light parameters.</p>
+    <p>Only connect 1 light to this node. It is designed to manage and persist the state of an exact single globe.</p>
+
+    <h3>Modes</h3>
+    <ul>
+        <li><b>Basic</b> : raw mode, pretty much matches node-red-contrib-node-lifx format</li>
+        <li><b>Hue</b> : Hue mode, accepts messages from node-red-contrib-huemagic nodes</li>
+        <li><b>LIFX</b> : lifx mode, accepts messages from node-red-contrib-node-lifx nodes</li>
+    </ul>
 </script>

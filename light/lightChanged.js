@@ -7,8 +7,20 @@ module.exports = function(RED) {
     function AnamicoLightChanged(config) {
         RED.nodes.createNode(this, config);
         this._lights = RED.nodes.getNode(config.lights);
-
+        this.name = config.name;
         var node = this;
+
+        /**
+         * validate the configuration
+         */
+        if (!node.name || !node.name.length || node.name.length < 1) {
+            node.status({
+                fill:   "red",
+                shape:  "dot",
+                text:   "Missing Name"
+            });
+            return;
+        }
 
         /**
          * listen for panel state changes
@@ -19,18 +31,18 @@ module.exports = function(RED) {
             node.log(JSON.stringify(msg, null, 2));
 
             node.status({
-                fill: node._panel.isAlarm ? "red" : "green",
-                shape:"dot",
-                text:node._panel.alarmModes[node._panel.alarmState]
+                fill:   "gray",
+                shape:  "dot",
+                text:   "off"
             });
 
-            if (node.toHomekit && msg.payload) {
-                const oldPayload = msg.payload;
-                msg.payload = {};
-                if (typeof oldPayload.SecuritySystemTargetState !== "undefined") { msg.payload.SecuritySystemTargetState = oldPayload.SecuritySystemTargetState; }
-                if (typeof oldPayload.SecuritySystemCurrentState !== "undefined") { msg.payload.SecuritySystemCurrentState = oldPayload.SecuritySystemCurrentState; }
-                if (typeof oldPayload.SecuritySystemAlarmType !== "undefined") { msg.payload.SecuritySystemAlarmType = oldPayload.SecuritySystemAlarmType; }
-            }
+            // if (node.toHomekit && msg.payload) {
+            //     const oldPayload = msg.payload;
+            //     msg.payload = {};
+            //     if (typeof oldPayload.SecuritySystemTargetState !== "undefined") { msg.payload.SecuritySystemTargetState = oldPayload.SecuritySystemTargetState; }
+            //     if (typeof oldPayload.SecuritySystemCurrentState !== "undefined") { msg.payload.SecuritySystemCurrentState = oldPayload.SecuritySystemCurrentState; }
+            //     if (typeof oldPayload.SecuritySystemAlarmType !== "undefined") { msg.payload.SecuritySystemAlarmType = oldPayload.SecuritySystemAlarmType; }
+            // }
 
             node.send(msg);
         });
