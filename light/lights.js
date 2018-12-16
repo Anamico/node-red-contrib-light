@@ -12,10 +12,13 @@ module.exports = function(RED) {
         node.nodeId = node.id.replace(/\./g, '_');
 
         node.getLightState = function(lightName) {
-            node.context().global.get(node.nodeId + '_' + lightName); // todo: need an initial default state?
+            const state = node.context().global.get(node.nodeId + '_' + lightName); // todo: need an initial default state?
+            node.log("getState: " + JSON.stringify(state, null, 2));
+            return state;
         };
 
         node.setLightState = function(lightName, state) {
+            node.log("setState: " + JSON.stringify(state, null, 2));
             node.context().global.set(node.nodeId + '_' + lightName, state);
         };
 
