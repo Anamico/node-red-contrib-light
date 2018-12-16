@@ -46,27 +46,27 @@ module.exports = function(RED) {
              var state = node.getLightState(lightNode.name) || {};
              var changed = false;
 
-             if (msg.payload.on) {
+             if (typeof msg.payload.on !== 'undefined') {
                  changed = msg.payload.on !== state.on;
                  state.on = msg.payload.on;
              }
-             if (msg.payload.reachable) {
+             if (typeof msg.payload.reachable !== 'undefined') {
                  changed = changed || (msg.payload.reachable !== state.reachable);
                  state.reachable = msg.payload.reachable;
              }
-             if (msg.payload.bri) {
+             if (typeof msg.payload.bri !== 'undefined') {
                  changed = changed || (msg.payload.bri !== state.bri);
                  state.bri = msg.payload.bri;
              }
-             if (msg.payload.hsv) {
+             if (typeof msg.payload.hsv !== 'undefined') {
                  changed = changed || (msg.payload.hsv !== state.hsv); // todo: fix array comparison
                  state.hsv = msg.payload.hsv;
              }
-             if (msg.payload.rgb) {
+             if (typeof msg.payload.rgb !== 'undefined') {
                  changed = changed || (msg.payload.rgb !== state.rgb); // todo: fix array comparison
                  state.rgb = msg.payload.rgb;
              }
-             if (msg.payload.hex) {
+             if (typeof msg.payload.hex !== 'undefined') {
                  changed = changed || (msg.payload.hex !== state.hex);
                  state.hex = msg.payload.hex;
              }
@@ -207,32 +207,32 @@ module.exports = function(RED) {
                 }
 
                 var newState = state;
-                if (msg.payload.on) {
+                if (typeof msg.payload.on !== "undefined") {
                     changed = msg.payload.on !== state.on;
                     newState.on = msg.payload.on;
                 }
-                if (msg.payload.reachable) {
+                if (typeof msg.payload.reachable !== "undefined") {
                     changed = changed || (msg.payload.reachable !== state.reachable);
                     newState.reachable = msg.payload.reachable;
                 }
-                if (msg.payload.bri) {
+                if (typeof msg.payload.bri !== "undefined") {
                     changed = changed || (msg.payload.bri !== state.bri);
                     newState.bri = msg.payload.bri;
                 }
-                if (msg.payload.hsv) {
+                if (typeof msg.payload.hsv !== "undefined") {
                     changed = changed || (msg.payload.hsv !== state.hsv); // todo: fix array comparison
                     newState.hsv = msg.payload.hsv;
                 }
-                if (msg.payload.rgb) {
+                if (typeof msg.payload.rgb !== "undefined") {
                     changed = changed || (msg.payload.rgb !== state.rgb); // todo: fix array comparison
                     newState.rgb = msg.payload.rgb;
                 }
-                if (msg.payload.hex) {
+                if (typeof msg.payload.hex !== "undefined") {
                     changed = changed || (msg.payload.hex !== state.hex);
                     newState.hex = msg.payload.hex;
                 }
 
-                if (msg.payload.bri_add) {
+                if (typeof msg.payload.bri_add !== "undefined") {
                     changed = true;             // ???
                     newState.bri = newBrightness;
                 }
