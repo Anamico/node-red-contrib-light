@@ -1,6 +1,6 @@
 'use strict';
 
-//const async = require('async');
+const convert = require('color-convert');
 
 module.exports = function(RED) {
 
@@ -72,7 +72,7 @@ module.exports = function(RED) {
             switch (msg.payload.button) {
                 case 1000:
                 case 1002:
-                    msg.payload = { on: true, hue: 0, saturation: 0, luminance: 100 };
+                    msg.payload = { on: true, red: 255, green: 255, blue: 255, bri: 100 };
                     node.status({
                         fill:   'green',
                         shape:  'dot',

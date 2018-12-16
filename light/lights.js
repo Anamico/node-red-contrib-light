@@ -12,14 +12,22 @@ module.exports = function(RED) {
         node.nodeId = node.id.replace(/\./g, '_');
 
         node.getLightState = function(lightName) {
-            const state = node.context().global.get(node.nodeId + '_' + lightName); // todo: need an initial default state?
-            node.log("getState: " + JSON.stringify(state, null, 2));
-            return state;
+            const json = node.context().global.get(node.nodeId + '_' + lightName); // todo: need an initial default state?
+            try {
+                const state = JSON.parse(json);
+                node.log("getState: " + JSON.stringify(state, null, 2));
+                return state;
+            }
+            catch (err) {
+                node.log("getState json error: " + json);
+            }
+            return null;
         };
 
         node.setLightState = function(lightName, state) {
-            node.log("setState: " + JSON.stringify(state, null, 2));
-            node.context().global.set(node.nodeId + '_' + lightName, state);
+            const json = JSON.stringify(state);
+            node.log("setState: " + json);
+            node.context().global.set(node.nodeId + '_' + lightName, json);
         };
 
         /**
@@ -91,7 +99,7 @@ module.exports = function(RED) {
                  node.setLightState(lightNode.name, state);
                  msg.changed = changed;
              }
-             callback(null, msg);
+             callback(null, state);
         };
 
         /**

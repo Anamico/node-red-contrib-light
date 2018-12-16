@@ -36,6 +36,9 @@ module.exports = function(RED) {
                 text:   msg.payload.on ? (msg.payload.luminance ? ((msg.payload.luminance/100) * 100).toFixed(2) + '%' : 'on') : 'off'
             });
 
+            node._lights.lightChanged(node, msg, function(err, state) {
+                node.log({ node: "LightChanged", err: err, state: state });
+            });
             node.send(msg);
         });
 
