@@ -33,16 +33,8 @@ module.exports = function(RED) {
             node.status({
                 fill:   "gray",
                 shape:  "dot",
-                text:   "off"
+                text:   msg.payload.on ? (msg.payload.luminance ? ((msg.payload.luminance/100) * 100).toFixed(2) + '%' : 'on') : 'off'
             });
-
-            // if (node.toHomekit && msg.payload) {
-            //     const oldPayload = msg.payload;
-            //     msg.payload = {};
-            //     if (typeof oldPayload.SecuritySystemTargetState !== "undefined") { msg.payload.SecuritySystemTargetState = oldPayload.SecuritySystemTargetState; }
-            //     if (typeof oldPayload.SecuritySystemCurrentState !== "undefined") { msg.payload.SecuritySystemCurrentState = oldPayload.SecuritySystemCurrentState; }
-            //     if (typeof oldPayload.SecuritySystemAlarmType !== "undefined") { msg.payload.SecuritySystemAlarmType = oldPayload.SecuritySystemAlarmType; }
-            // }
 
             node.send(msg);
         });

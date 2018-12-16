@@ -12,11 +12,11 @@ module.exports = function(RED) {
         node.nodeId = node.id.replace(/\./g, '_');
 
         node.getLightState = function(lightName) {
-            node.context().global.get(node.nodeId + '_' + lightname); // todo: need an initial default state?
+            node.context().global.get(node.nodeId + '_' + lightName); // todo: need an initial default state?
         };
 
         node.setLightState = function(lightName, state) {
-            node.context().global.set(node.nodeId + '_' + lightname, state);
+            node.context().global.set(node.nodeId + '_' + lightName, state);
         };
 
         /**
@@ -47,27 +47,27 @@ module.exports = function(RED) {
              var changed = false;
 
              if (msg.payload.on) {
-                 changed = msg.payload.on != state.on;
+                 changed = msg.payload.on !== state.on;
                  state.on = msg.payload.on;
              }
              if (msg.payload.reachable) {
-                 changed = changed || (msg.payload.reachable != state.reachable);
+                 changed = changed || (msg.payload.reachable !== state.reachable);
                  state.reachable = msg.payload.reachable;
              }
              if (msg.payload.bri) {
-                 changed = changed || (msg.payload.bri != state.bri);
+                 changed = changed || (msg.payload.bri !== state.bri);
                  state.bri = msg.payload.bri;
              }
              if (msg.payload.hsv) {
-                 changed = changed || (msg.payload.hsv != state.hsv); // todo: fix array comparison
+                 changed = changed || (msg.payload.hsv !== state.hsv); // todo: fix array comparison
                  state.hsv = msg.payload.hsv;
              }
              if (msg.payload.rgb) {
-                 changed = changed || (msg.payload.rgb != state.rgb); // todo: fix array comparison
+                 changed = changed || (msg.payload.rgb !== state.rgb); // todo: fix array comparison
                  state.rgb = msg.payload.rgb;
              }
              if (msg.payload.hex) {
-                 changed = changed || (msg.payload.hex != state.hex);
+                 changed = changed || (msg.payload.hex !== state.hex);
                  state.hex = msg.payload.hex;
              }
              // todo: implement 'color' later?
@@ -168,35 +168,82 @@ module.exports = function(RED) {
          * @param msg
          * @param callback
          */
-        node.api = function(msg, callback) {
-
-            const lightNames = msg.lights;  // this is ALWAYS an array, the caller is responsible for that precondition
+        node.api = function(msg, lightNames, callback) {
 
             if (!lightNames || !Array.isArray(lightNames)) {
-                node.error('msg.payload.lights : invalid array of names', msg);
+                node.error("No Light Names supplied", msg);
+                callback(new Error("No Light Names supplied"));
                 return;
             }
 
             //
             // collect current light states
             //
-            var brightness = null;  // used for an incremental change
+            var brightness = -1;  // used for an incremental change
+            var newBrightness = null;
 
             var lights = lightNames.reduce(function(memo, lightName) {
-                const state = node.getLightState(lightName);
+                const state = node.getLightState(lightName) || {};
                 var changed = false;
                 //
                 // make the changes requested
                 //
+                if (msg.payload.bri_add && (brightness === -1)) {
+                    // the first light dictates bank brightness
+                    if (typeof state.bri === "undefined") {
+                        // it's an error to have no brightness for the first light?
+                        node.error('No brightness on first light to adjust', msg);
+                        callback(new Error("No brightness on first light to adjust"));
+                        return;
+                    }
+                    brightness = state.bri;
+                    newBrightness = brightness + msg.payload.bri_add;
+                    if (newBrightness > 100) {
+                        newBrightness = 100;
+                    }
+                    if (newBrightness < 0) {
+                        newBrightness = 0;
+                    }
+                }
 
+                var newState = state;
+                if (msg.payload.on) {
+                    changed = msg.payload.on !== state.on;
+                    newState.on = msg.payload.on;
+                }
+                if (msg.payload.reachable) {
+                    changed = changed || (msg.payload.reachable !== state.reachable);
+                    newState.reachable = msg.payload.reachable;
+                }
+                if (msg.payload.bri) {
+                    changed = changed || (msg.payload.bri !== state.bri);
+                    newState.bri = msg.payload.bri;
+                }
+                if (msg.payload.hsv) {
+                    changed = changed || (msg.payload.hsv !== state.hsv); // todo: fix array comparison
+                    newState.hsv = msg.payload.hsv;
+                }
+                if (msg.payload.rgb) {
+                    changed = changed || (msg.payload.rgb !== state.rgb); // todo: fix array comparison
+                    newState.rgb = msg.payload.rgb;
+                }
+                if (msg.payload.hex) {
+                    changed = changed || (msg.payload.hex !== state.hex);
+                    newState.hex = msg.payload.hex;
+                }
+
+                if (msg.payload.bri_add) {
+                    changed = true;             // ???
+                    newState.bri = newBrightness;
+                }
 
                 memo[lightName] = state;
                 // todo: we don't save the new state here do we? I think we need to be careful we don't clobber events coming from the light itself.
 
                 // tell all listeners about the new command for this light.
                 const listeners = node.stateListeners[lightName] || {};
-                Object.values(listeners).forEach(function(listener) {
-                    listener(state);
+                Object.keys(listeners).map(function(key) { return listeners[key]; }).forEach(function(listener) {
+                    listener({ payload: state });
                 });
             }, {});
 

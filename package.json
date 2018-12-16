@@ -20,6 +20,7 @@
       "email": "roo@roo.emu.id.au"
     }
   ],
+  "donate": "https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JUYN6NBFELTC2&source=url",
   "license": "MIT",
   "dependencies": {
     "async": "^2.6.1"

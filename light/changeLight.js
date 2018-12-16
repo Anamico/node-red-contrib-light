@@ -6,7 +6,6 @@ module.exports = function(RED) {
 
     function AnamicoChangeLight(config) {
         RED.nodes.createNode(this, config);
-        this.configError = false;
         this._lights = RED.nodes.getNode(config.lights);
         this.name = config.name;
         var node = this;
@@ -62,12 +61,15 @@ module.exports = function(RED) {
          * listen for panel state changes
          */
         node._lights && node._lights.registerStateListener(node, function(msg) {
-            if (node.configError) { node._panel.deregisterStateListener(node); return; }   // ignore everything if in error state, can only redeploy to fix this state
+
             node.status({
-                fill: node._panel.isAlarm ? "red" : "green",
-                shape:"dot",
-                text:node._panel.alarmModes[node._panel.alarmState]
+                fill:   msg.payload.on ? "green" : "gray",
+                shape:  "dot",
+                text:   msg.payload.on ? (msg.payload.luminance ? ((msg.payload.luminance/100) * 100).toFixed(2) + '%' : 'on') : 'off'
             });
+            // reformat the command to match the type of light
+
+
 
             node.send(msg);
         });

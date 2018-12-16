@@ -4,7 +4,8 @@
         color: '#B9FFFF',
         defaults: {
             name: { value : "" },
-            lights: { type: 'AnamicoLights', required: true }
+            lights: { type: 'AnamicoLights', required: true },
+            lightNames: { value: "", required: false }
         },
         inputs: 1,
         outputs: 0,
@@ -25,6 +26,7 @@
 
     <div class="form-tips">Tip: The light Id can be any string, and uniquely identifies THIS particular light, ie: "Kitchen" or "Lounge Downlight 3".</div>
 
+    <div class="form-row"> &nbsp;</div>
     <div class="form-row">
         <label for="node-input-lights"><i class="fa fa-server"></i> Lights</label>
         <input type="text" id="node-input-lights" placeholder="Lights">
@@ -32,10 +34,29 @@
 
     <div class="form-tips">Tip: create a single 'lights' node to basically be a single property, then use it for all lights.</div>
 
+    <div class="form-row"> &nbsp;</div>
+    <div class="form-row">
+        <label for="node-input-lightNames"><i class="fa fa-lightglobe"></i> Light Names</label>
+        <textarea rows="4" cols="50" id="node-input-lightNames" placeholder="Names of lights, 1 per line">
+        </textarea>
+    </div>
+
+    <div class="form-tips">Tip: Optionally List the names of the lights that commands to this node should effect. List one light name per line.</div>
 </script>
 
 <script type="text/x-red" data-help-name="AnamicoLightUpdates">
     <h3>Configure Lights</h3>
     <p>This node accepts a bunch of different commands to configure a light or groups of lights.</p>
-    <h3>Todo</h3>
+
+    <h3>Automatically detected inputs</h3>
+    <p>This node will automatically take commands in node-red-contrib-node-lifx light format and will also automatically detect and attempt to control lights
+        based on input from a node-red-contrib-huemagic light-switch node.</p>
+
+    <h3>Specifying target lights</h3>
+    <P>You MUST specify target globes by name, either by a list of names in this configuration, or by passing in an array of names as msg.payload.lights.
+        If you specify msg.payload.lights, then that list of lights will be used and the light names listed in this configuration will be ignored.</p>
+
+    <h3>Donate to show your support or gratitude</h3>
+    <p>Donations support the open source community and help authors continue to support these projects, please feel free to donate here.
+        <a target="donate" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JUYN6NBFELTC2&source=url"><img src="https://img.shields.io/badge/donate-PayPal-green.svg"></a></p>
 </script>

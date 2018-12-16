@@ -12,7 +12,7 @@
         outputLabels: "new state",
         icon: "bulb.png",
         label: function() {
-            return this.name || "Unnamed" + ' (' + this.mode + ')';
+            return this.name ? this.name + ' (' + this.mode + ')' : 'Unnamed';
         },
         paletteLabel: 'Light Changed'
     });
@@ -59,4 +59,8 @@
         <li><b>Hue</b> : Hue mode, accepts messages from node-red-contrib-huemagic nodes</li>
         <li><b>LIFX</b> : lifx mode, accepts messages from node-red-contrib-node-lifx nodes</li>
     </ul>
+
+    <h3>Donate to show your support or gratitude</h3>
+    <p>Donations support the open source community and help authors continue to support these projects, please feel free to donate here.
+        <a target="donate" href="https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JUYN6NBFELTC2&source=url"><img src="https://img.shields.io/badge/donate-PayPal-green.svg"></a></p>
 </script>
