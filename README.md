@@ -101,17 +101,18 @@ I am looking at what else I can build in to automate with those instructions, bu
 
 # Extension and Compatible Nodes
 
-node-red-contrib-light is deigned to accept standard calls from a variety of nodes to allow any sort of visual effects:
+node-red-contrib-light is designed to accept standard calls from a variety of nodes to allow any sort of visual effects:
 
-todo: list compatible automation node sets such as: node-red-contrib-light-effects
-
-todo:
-* Christmas lights
-* Marching Ants
-* Light Chasers
-* KITT effects
+* [node-red-contrib-light-fx](https://github.com/Anamico/node-red-contrib-light-fx)
+* [node-red-contrib-light-airtunes](https://github.com/Anamico/node-red-contrib-light-airtunes)
 
 If you create some more automations or effects as reusable nodes, please update this README and submit a pull request.
+
+
+# Donations [![Donate](https://img.shields.io/badge/donate-PayPal-green.svg)](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JUYN6NBFELTC2&source=url)
+
+If you would like to donate some money to support ongoing development or as a simple thank you for me sharing this project for others to use, please feel free to send money via
+[PayPal](https://www.paypal.com/cgi-bin/webscr?cmd=_s-xclick&hosted_button_id=JUYN6NBFELTC2&source=url).
 
 
 # Disclaimer
