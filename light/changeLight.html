@@ -3,7 +3,7 @@
         category: 'lighting',
         color: '#B9FFFF',
         defaults: {
-            name: { value : '', required: true },
+            name: { value : '', required: true, validate: RED.validators.regex(/[a-zA-Z0-9\s]+/) },
             lights: { type: 'AnamicoLights', required: true },
             mode: { value : 'Basic', required : true }
         },

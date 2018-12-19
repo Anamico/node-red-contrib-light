@@ -11,8 +11,20 @@ module.exports = function(RED) {
         node.stateListeners = {};
         node.nodeId = node.id.replace(/\./g, '_');
 
+        function sanitised(lightName) {
+            return lightName.replace(/[^a-zA-Z0-9]/g, '_');
+        }
+
         node.getLightState = function(lightName) {
-            const json = node.context().global.get(node.nodeId + '_' + lightName); // todo: need an initial default state?
+            const safeName = sanitised(lightName);
+            const json = node.context().global.get(node.nodeId + '_' + safeName);
+            // todo: need a better initial default state?
+            if (!json) {
+                return {
+                    on: false,
+                    bri: 100
+                };
+            }
             try {
                 const state = JSON.parse(json);
                 node.log("getState: " + JSON.stringify(state, null, 2));
@@ -25,9 +37,10 @@ module.exports = function(RED) {
         };
 
         node.setLightState = function(lightName, state) {
+            const safeName = sanitised(lightName);
             const json = JSON.stringify(state);
             node.log("setState: " + json);
-            node.context().global.set(node.nodeId + '_' + lightName, json);
+            node.context().global.set(node.nodeId + '_' + safeName, json);
         };
 
         /**
