@@ -82,6 +82,9 @@ module.exports = function(RED) {
              if (typeof msg.payload.bri !== 'undefined') {
                  changed = changed || (msg.payload.bri !== state.bri);
                  state.bri = msg.payload.bri;
+             } else if (typeof msg.payload.brightness !== "undefined") {
+                 changed = changed || (msg.payload.brightness !== state.bri);
+                 state.bri = msg.payload.brightness;
              }
 
              //
@@ -103,6 +106,18 @@ module.exports = function(RED) {
                  //newState.hsv = msg.payload.hsv;
                  state.hex = convert.hsv.hex(msg.payload.hsv);
                  //newState.rgb = convert.hex.rgb(newState.hex);
+             } else if (msg.payload.red || msg.payload.green || msg.payload.blue) {
+                 var rgb = convert.hex.rgb(state.hex || 'FFFFFF');
+                 if (msg.payload.red) {
+                     rgb[0] = msg.payload.red;
+                 }
+                 if (msg.payload.green) {
+                     rgb[1] = msg.payload.green;
+                 }
+                 if (msg.payload.blue) {
+                     rgb[2] = msg.payload.blue;
+                 }
+                 state.hex = convert.rgb.hex(rgb);
              }
 
              delete state.rgb;
@@ -256,6 +271,9 @@ module.exports = function(RED) {
                 if (typeof msg.payload.bri !== "undefined") {
                     changed = changed || (msg.payload.bri !== state.bri);
                     newState.bri = msg.payload.bri;
+                } else if (typeof msg.payload.brightness !== "undefined") {
+                    changed = changed || (msg.payload.brightness !== state.bri);
+                    newState.bri = msg.payload.brightness;
                 }
                 //
                 // rgb is highest priority
@@ -276,6 +294,18 @@ module.exports = function(RED) {
                     //newState.hsv = msg.payload.hsv;
                     newState.hex = convert.hsv.hex(msg.payload.hsv);
                     //newState.rgb = convert.hex.rgb(newState.hex);
+                } else if (msg.payload.red || msg.payload.green || msg.payload.blue) {
+                    var rgb = convert.hex.rgb(newState.hex || 'FFFFFF');
+                    if (msg.payload.red) {
+                        rgb[0] = msg.payload.red;
+                    }
+                    if (msg.payload.green) {
+                        rgb[1] = msg.payload.green;
+                    }
+                    if (msg.payload.blue) {
+                        rgb[2] = msg.payload.blue;
+                    }
+                    newState.hex = convert.rgb.hex(rgb);
                 }
 
                 if (typeof msg.payload.bri_add !== "undefined") {
