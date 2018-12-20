@@ -1,6 +1,7 @@
 'use strict';
 
 const async = require('async');
+const convert = require('color-convert');
 
 module.exports = function(RED) {
 
@@ -82,18 +83,28 @@ module.exports = function(RED) {
                  changed = changed || (msg.payload.bri !== state.bri);
                  state.bri = msg.payload.bri;
              }
-             if (typeof msg.payload.hsv !== 'undefined') {
-                 changed = changed || (msg.payload.hsv !== state.hsv); // todo: fix array comparison
-                 state.hsv = msg.payload.hsv;
-             }
+
+             //
+             // rgb is highest priority
+             // todo: fix up the "changed" check
+             //
              if (typeof msg.payload.rgb !== 'undefined') {
-                 changed = changed || (msg.payload.rgb !== state.rgb); // todo: fix array comparison
+                 changed = true; // changed || (msg.payload.rgb !== state.rgb);
                  state.rgb = msg.payload.rgb;
-             }
-             if (typeof msg.payload.hex !== 'undefined') {
-                 changed = changed || (msg.payload.hex !== state.hex);
+                 state.hex = convert.rgb.hex(state.rgb);
+                 state.hsv = convert.hex.hsv(state.hex);
+             } else if (typeof msg.payload.hex !== 'undefined') {
+                 changed = true; // changed || (msg.payload.hex !== state.hex);
                  state.hex = msg.payload.hex;
+                 state.rgb = convert.hex.rgb(state.hex);
+                 state.hsv = convert.hex.hsv(state.hex);
+             } else if (typeof msg.payload.hsv !== 'undefined') {
+                 changed = true; // changed || (msg.payload.hsv !== state.hsv); // todo: fix array comparison
+                 state.hsv = msg.payload.hsv;
+                 state.hex = convert.hsv.hex(state.hsv);
+                 state.rgb = convert.hex.rgb(state.hex);
              }
+
              // todo: implement 'color' later?
              // if (msg.payload.color) {
              //     changed = changed || (msg.payload.on != state.on);
@@ -243,17 +254,25 @@ module.exports = function(RED) {
                     changed = changed || (msg.payload.bri !== state.bri);
                     newState.bri = msg.payload.bri;
                 }
-                if (typeof msg.payload.hsv !== "undefined") {
-                    changed = changed || (msg.payload.hsv !== state.hsv); // todo: fix array comparison
-                    newState.hsv = msg.payload.hsv;
-                }
-                if (typeof msg.payload.rgb !== "undefined") {
-                    changed = changed || (msg.payload.rgb !== state.rgb); // todo: fix array comparison
+                //
+                // rgb is highest priority
+                // todo: fix up the "changed" check
+                //
+                if (typeof msg.payload.rgb !== 'undefined') {
+                    changed = true; // changed || (msg.payload.rgb !== state.rgb);
                     newState.rgb = msg.payload.rgb;
-                }
-                if (typeof msg.payload.hex !== "undefined") {
-                    changed = changed || (msg.payload.hex !== state.hex);
+                    newState.hex = convert.rgb.hex(newState.rgb);
+                    newState.hsv = convert.hex.hsv(newState.hex);
+                } else if (typeof msg.payload.hex !== 'undefined') {
+                    changed = true; //changed || (msg.payload.hex !== state.hex);
                     newState.hex = msg.payload.hex;
+                    newState.rgb = convert.hex.rgb(newState.hex);
+                    newState.hsv = convert.hex.hsv(newState.hex);
+                } else if (typeof msg.payload.hsv !== 'undefined') {
+                    changed = true; //changed || (msg.payload.hsv !== state.hsv); // todo: fix array comparison
+                    newState.hsv = msg.payload.hsv;
+                    newState.hex = convert.hsv.hex(newState.hsv);
+                    newState.rgb = convert.hex.rgb(newState.hex);
                 }
 
                 if (typeof msg.payload.bri_add !== "undefined") {

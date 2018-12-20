@@ -1,7 +1,5 @@
 'use strict';
 
-//const async = require('async');
-
 module.exports = function(RED) {
 
     function AnamicoChangeLight(config) {
