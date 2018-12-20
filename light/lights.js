@@ -88,22 +88,25 @@ module.exports = function(RED) {
              // rgb is highest priority
              // todo: fix up the "changed" check
              //
-             if (typeof msg.payload.rgb !== 'undefined') {
-                 changed = true; // changed || (msg.payload.rgb !== state.rgb);
-                 state.rgb = msg.payload.rgb;
-                 state.hex = convert.rgb.hex(state.rgb);
-                 state.hsv = convert.hex.hsv(state.hex);
-             } else if (typeof msg.payload.hex !== 'undefined') {
-                 changed = true; // changed || (msg.payload.hex !== state.hex);
+             if (typeof msg.payload.hex !== 'undefined') {
+                 changed = true; //changed || (msg.payload.hex !== state.hex);
                  state.hex = msg.payload.hex;
-                 state.rgb = convert.hex.rgb(state.hex);
-                 state.hsv = convert.hex.hsv(state.hex);
+                 // newState.rgb = convert.hex.rgb(newState.hex);
+                 // newState.hsv = convert.hex.hsv(newState.hex);
+             } else if (typeof msg.payload.rgb !== 'undefined') {
+                 changed = true; // changed || (msg.payload.rgb !== state.rgb);
+                 //newState.rgb = msg.payload.rgb;
+                 state.hex = convert.rgb.hex(msg.payload.rgb);
+                 //newState.hsv = convert.hex.hsv(newState.hex);
              } else if (typeof msg.payload.hsv !== 'undefined') {
-                 changed = true; // changed || (msg.payload.hsv !== state.hsv); // todo: fix array comparison
-                 state.hsv = msg.payload.hsv;
-                 state.hex = convert.hsv.hex(state.hsv);
-                 state.rgb = convert.hex.rgb(state.hex);
+                 changed = true; //changed || (msg.payload.hsv !== state.hsv); // todo: fix array comparison
+                 //newState.hsv = msg.payload.hsv;
+                 state.hex = convert.hsv.hex(msg.payload.hsv);
+                 //newState.rgb = convert.hex.rgb(newState.hex);
              }
+
+             delete state.rgb;
+             delete state.hsv;
 
              // todo: implement 'color' later?
              // if (msg.payload.color) {
@@ -258,21 +261,21 @@ module.exports = function(RED) {
                 // rgb is highest priority
                 // todo: fix up the "changed" check
                 //
-                if (typeof msg.payload.rgb !== 'undefined') {
-                    changed = true; // changed || (msg.payload.rgb !== state.rgb);
-                    newState.rgb = msg.payload.rgb;
-                    newState.hex = convert.rgb.hex(newState.rgb);
-                    newState.hsv = convert.hex.hsv(newState.hex);
-                } else if (typeof msg.payload.hex !== 'undefined') {
+                if (typeof msg.payload.hex !== 'undefined') {
                     changed = true; //changed || (msg.payload.hex !== state.hex);
                     newState.hex = msg.payload.hex;
-                    newState.rgb = convert.hex.rgb(newState.hex);
-                    newState.hsv = convert.hex.hsv(newState.hex);
+                    // newState.rgb = convert.hex.rgb(newState.hex);
+                    // newState.hsv = convert.hex.hsv(newState.hex);
+                } else if (typeof msg.payload.rgb !== 'undefined') {
+                    changed = true; // changed || (msg.payload.rgb !== state.rgb);
+                    //newState.rgb = msg.payload.rgb;
+                    newState.hex = convert.rgb.hex(msg.payload.rgb);
+                    //newState.hsv = convert.hex.hsv(newState.hex);
                 } else if (typeof msg.payload.hsv !== 'undefined') {
                     changed = true; //changed || (msg.payload.hsv !== state.hsv); // todo: fix array comparison
-                    newState.hsv = msg.payload.hsv;
-                    newState.hex = convert.hsv.hex(newState.hsv);
-                    newState.rgb = convert.hex.rgb(newState.hex);
+                    //newState.hsv = msg.payload.hsv;
+                    newState.hex = convert.hsv.hex(msg.payload.hsv);
+                    //newState.rgb = convert.hex.rgb(newState.hex);
                 }
 
                 if (typeof msg.payload.bri_add !== "undefined") {
@@ -280,7 +283,8 @@ module.exports = function(RED) {
                     newState.bri = newBrightness;
                 }
 
-
+                delete newState.rgb;
+                delete newState.hsv;
                 memo[lightName] = newState;
                 // todo: we don't save the new state here do we? I think we need to be careful we don't clobber events coming from the light itself.
 
