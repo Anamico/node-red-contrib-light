@@ -280,13 +280,14 @@ module.exports = function(RED) {
                     newState.bri = newBrightness;
                 }
 
-                memo[lightName] = state;
+
+                memo[lightName] = newState;
                 // todo: we don't save the new state here do we? I think we need to be careful we don't clobber events coming from the light itself.
 
                 // tell all listeners about the new command for this light.
                 const listeners = node.stateListeners[lightName] || {};
                 Object.keys(listeners).map(function(key) { return listeners[key]; }).forEach(function(listener) {
-                    listener({ payload: state });
+                    listener({ payload: newState });
                 });
             }, {});
 
