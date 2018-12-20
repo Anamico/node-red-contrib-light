@@ -31,7 +31,7 @@ module.exports = function(RED) {
             node.status({
                 fill:   msg.payload.on ? "green" : "gray",
                 shape:  "dot",
-                text:   msg.payload.on ? (msg.payload.bri ? ((msg.payload.bri/100) * 100).toFixed(2) + '%' : 'on') : 'off'
+                text:   msg.payload.on ? (msg.payload.bri < 100 ? ((msg.payload.bri/100) * 100).toFixed(0) + '%' : 'on') : 'off'
             });
             // reformat the command to match the type of light
             if ((['Basic','LIFX'].indexOf(config.mode) > -1) && (typeof msg.payload.hex !== 'undefined')) {
