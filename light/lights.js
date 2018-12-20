@@ -315,6 +315,8 @@ module.exports = function(RED) {
 
                 delete newState.rgb;
                 delete newState.hsv;
+                newState.duration = msg.payload.duration;
+
                 memo[lightName] = newState;
                 // todo: we don't save the new state here do we? I think we need to be careful we don't clobber events coming from the light itself.
 

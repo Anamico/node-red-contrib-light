@@ -29,9 +29,9 @@ module.exports = function(RED) {
             node.log(JSON.stringify(msg, null, 2));
 
             node.status({
-                fill:   "gray",
+                fill:   msg.payload.on ? "green" : "gray",
                 shape:  "dot",
-                text:   msg.payload.on ? (msg.payload.luminance ? ((msg.payload.luminance/100) * 100).toFixed(2) + '%' : 'on') : 'off'
+                text:   msg.payload.on ? (msg.payload.bri ? ((msg.payload.bri/100) * 100).toFixed(2) + '%' : 'on') : 'off'
             });
 
             node._lights.lightChanged(node, msg, function(err, state) {
