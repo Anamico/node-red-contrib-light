@@ -14,6 +14,25 @@ There is 1 configuration node and 3 flow node types currently provided:
 3. LightChanged node
 4. Updates node
 
+# NOTE
+
+This is built to work best with [node-red-contrib-node-lifx](https://www.npmjs.com/package/node-red-contrib-node-lifx), the reason I don't use node-red-contrib-lifx2
+or variants, .
+
+But I have had an issue with colours not setting correctly using node-red-contrib-node-lifx, which is apparently related to the dependency node-lifx not having been updated in some time.
+
+The "fix" is to update the node-lifx lib file "products.json" with the [latest version from the laster branch](https://github.com/LIFX/products/blob/master/products.json)
+
+This was the explanation from the author:
+
+> In short, it's an issue with the node-life dependency, not the node-red-contrib-node-lifx package itself.
+>
+> The node-life package (https://github.com/MariusRumpf/node-lifx) hasn't been updated in about a year, but LIFX has released new products since its last update. You could open an issue on that package, but that's really what we're waiting on. I'm just happy this package works with the minor modification. Until node-lifx updates, doing an npm install of this package will always give you the "current" node-lifx, and thus the outdated product list.
+>
+> I run my home lighting system on a Raspberry Pi and just keep a copy of the current products.json on the desktop, as I have to replace it if I ever need to reinstall, but it does work reliably. In my case, the missing products are my new LIFX mini bulbs, but my code always acts funny if I forget to update the products.json file, so that would seem to be the clear problem.
+>
+> So it's definitely fiddly, but at least it works!
+
 # How it works
 
 These nodes are designed to work in a fairly simple way.
