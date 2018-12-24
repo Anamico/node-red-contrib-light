@@ -325,6 +325,8 @@ module.exports = function(RED) {
                 Object.keys(listeners).map(function(key) { return listeners[key]; }).forEach(function(listener) {
                     listener({ payload: newState });
                 });
+
+                return memo;
             }, {});
 
             callback(null, lights);
