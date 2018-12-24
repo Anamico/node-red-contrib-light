@@ -24,6 +24,19 @@ module.exports = function(RED) {
 
 
         /**
+         * handle inputs
+         */
+        node.on('input', function(msg) {
+            node.log('light input: ' + JSON.stringify(msg, null, 2));
+
+            node._lights && node._lights.lightChanged(node, msg, function(err, state) {
+                // nop?
+                node.log('light input response: ' + JSON.stringify(state, null, 2));
+            });
+        });
+
+
+        /**
          * listen for panel state changes
          */
         node._lights && node._lights.registerStateListener(node, function(msg) {
