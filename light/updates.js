@@ -71,6 +71,7 @@ module.exports = function(RED) {
         function handleHueSwitch(msg, lightNames) {
             switch (msg.payload.button) {
                 case 1000:
+                case 1001:
                 case 1002:
                     msg.payload = { on: true, red: 255, green: 255, blue: 255, bri: 100 };
                     node.status({
@@ -81,6 +82,7 @@ module.exports = function(RED) {
                     break;
 
                 case 2000:
+                case 2001:
                 case 2002:
                     msg.payload = { bri_add: 10, duration: 1000 };
                     node.status({
@@ -91,6 +93,7 @@ module.exports = function(RED) {
                     break;
 
                 case 3000:
+                case 3001:
                 case 3002:
                     msg.payload = { bri_add: -10, duration: 1000 };
                     node.status({
@@ -101,6 +104,7 @@ module.exports = function(RED) {
                     break;
 
                 case 4000:
+                case 4001:
                 case 4002:
                     msg.payload = { on: false };
                     node.status({
@@ -108,6 +112,13 @@ module.exports = function(RED) {
                         shape:  'dot',
                         text:   'Hue: Off'
                     });
+                    break;
+
+                case 1003:
+                case 2003:
+                case 3003:
+                case 4003:
+                    // ignore switch release
                     break;
 
                 default:
