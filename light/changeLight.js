@@ -53,6 +53,23 @@ module.exports = function(RED) {
                 msg.payload.sat = hsl[1];
                 msg.payload.bri = hsl[2];
                 delete msg.payload.hex;
+            } else if (['Tasmota'].includes(config.mode)) {
+                if (msg.payload.on === false) {
+                    msg = {payload: {on: false}};
+                } else {
+                    if (typeof msg.payload.bri !== 'undefined') {
+                        msg.payload.bright = msg.payload.bri;
+                        delete msg.payload.bright;
+                    }
+                    if (typeof msg.payload.mired !== 'undefined') {
+                        msg.payload.ct = msg.payload.mired;
+                        delete msg.payload.mired;
+                    }
+                    if (typeof msg.payload.kelvin !== 'undefined') {
+                        msg.payload.ct = msg.payload.kelvin;
+                        delete msg.payload.kelvin;
+                    }
+                }
             }
             node.send(msg);
         });
