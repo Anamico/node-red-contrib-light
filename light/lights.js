@@ -4,6 +4,7 @@ const async = require('async');
 const convert = require('color-convert');
 
 Array.prototype.isEqual = function (array) {
+    if (typeof array === 'undefined') { return false }
     let i = this.length;
     if (i !== array.length) return false;
     while (i--) {
@@ -105,11 +106,15 @@ module.exports = function(RED) {
                  state.hex = msg.payload.hex;
                  // newState.rgb = convert.hex.rgb(newState.hex);
                  // newState.hsv = convert.hex.hsv(newState.hex);
-             } else if (typeof msg.payload.rgb !== 'undefined' || Array.isArray(msg.payload.colors)) {
+             } else if (typeof msg.payload.rgb !== 'undefined') {
                  changed =  changed || (msg.payload.rgb.isEqual(state.rgb));
                  //newState.rgb = msg.payload.rgb;
                  state.hex = convert.rgb.hex(msg.payload.rgb);
                  //newState.hsv = convert.hex.hsv(newState.hex);
+             } else if (Array.isArray(msg.payload.colors)) {
+                 let hex = convert.rgb.hex(msg.payload.rgb);
+                 changed =  changed || (hex !== (state.hex));
+                 state.hex = hex;
              } else if (typeof msg.payload.hsv !== 'undefined') {
                  changed = changed || (msg.payload.hsv.isEqual(state.hsv));
                  //newState.hsv = msg.payload.hsv;
