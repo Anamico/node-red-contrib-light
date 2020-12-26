@@ -3,6 +3,15 @@
 const async = require('async');
 const convert = require('color-convert');
 
+Array.prototype.isEqual = function (array) {
+    let i = this.length;
+    if (i !== array.length) return false;
+    while (i--) {
+        if (this[i] !== array[i]) return false;
+    }
+    return true;
+};
+
 module.exports = function(RED) {
 
     function AnamicoLights(config) {
@@ -92,17 +101,17 @@ module.exports = function(RED) {
              // todo: fix up the "changed" check
              //
              if (typeof msg.payload.hex !== 'undefined') {
-                 changed = true; //changed || (msg.payload.hex !== state.hex);
+                 changed = changed || (msg.payload.hex !== state.hex);
                  state.hex = msg.payload.hex;
                  // newState.rgb = convert.hex.rgb(newState.hex);
                  // newState.hsv = convert.hex.hsv(newState.hex);
-             } else if (typeof msg.payload.rgb !== 'undefined') {
-                 changed = true; // changed || (msg.payload.rgb !== state.rgb);
+             } else if (typeof msg.payload.rgb !== 'undefined' || Array.isArray(msg.payload.colors)) {
+                 changed =  changed || (msg.payload.rgb.isEqual(state.rgb));
                  //newState.rgb = msg.payload.rgb;
                  state.hex = convert.rgb.hex(msg.payload.rgb);
                  //newState.hsv = convert.hex.hsv(newState.hex);
              } else if (typeof msg.payload.hsv !== 'undefined') {
-                 changed = true; //changed || (msg.payload.hsv !== state.hsv); // todo: fix array comparison
+                 changed = changed || (msg.payload.hsv.isEqual(state.hsv));
                  //newState.hsv = msg.payload.hsv;
                  state.hex = convert.hsv.hex(msg.payload.hsv);
                  //newState.rgb = convert.hex.rgb(newState.hex);
@@ -118,6 +127,11 @@ module.exports = function(RED) {
                      rgb[2] = msg.payload.blue;
                  }
                  state.hex = convert.rgb.hex(rgb);
+             }
+
+             if (typeof msg.payload.ct !== 'undefined') {
+                 changed = changed || (msg.payload.ct !== state.kelvin)
+                 state.kelvin = msg.payload.ct
              }
 
              delete state.rgb;
@@ -274,6 +288,9 @@ module.exports = function(RED) {
                 } else if (typeof msg.payload.brightness !== "undefined") {
                     changed = changed || (msg.payload.brightness !== state.bri);
                     newState.bri = msg.payload.brightness;
+                } else if (typeof msg.payload.bright !== "undefined") {
+                    changed = changed || (msg.payload.bright !== state.bri);
+                    newState.bri = msg.payload.bright
                 }
                 //
                 // rgb is highest priority
