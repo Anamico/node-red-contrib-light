@@ -41,7 +41,7 @@ sync with that physical light.
 
 ![LIFX Example](https://github.com/Anamico/node-red-contrib-light/raw/master/images/lifxLight.png "LIFX Example")
 
-"Default" or "LIFX" modes will expect payloads in node-red-contrib-node-lifx message format. Currently "Hue" mode is also supported and accepts and decodes messages from
+"Default" or "LIFX" modes will expect payloads in node-red-contrib-node-lifx message format. "Tasmota" mode accepts payloads in the node-red-contrib-tasmota message format. Currently "Hue" mode is also supported and accepts and decodes messages from
 node-red-contrib-huebridge light globe nodes.
 
 You can easily support other lights by "massaging" the msg.payload output from that light to one of those 2 formats. If you need a specific format, please feel free to visit the github repo,
@@ -55,6 +55,7 @@ Make sure you also select the right "mode" in the node configuration:
 * Default - Same as LIFX format
 * Hue - compatible with messages from node-red-contrib-huebridge light globe nodes (node-lifx-out)
 * LIFX - compatible with messages from node-red-contrib-node-lifx light globe nodes (hue-light)
+* Tasmota - compatible with messages from node-red-contrib-tasmota light nodes (Tasmota Light)
 
 ## LightChanged
 
@@ -76,6 +77,7 @@ Make sure you also select the right "mode" in the node configuration:
 * Default - Same as LIFX format
 * Hue - compatible with messages from node-red-contrib-huebridge light globe nodes (node-lifx-out)
 * LIFX - compatible with messages from node-red-contrib-node-lifx light globe nodes (hue-light)
+* Tasmota - compatible with messages from node-red-contrib-tasmota light nodes (Tasmota Light)
 
 ## Updates
 
