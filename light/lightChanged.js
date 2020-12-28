@@ -26,7 +26,7 @@ module.exports = function(RED) {
         node._lights && node._lights.registerStateListener(node, function(msg) {
 
             node.log("new State");
-            node.log(JSON.stringify(msg, null, 2));
+            node.debug(JSON.stringify(msg, null, 2));
 
             node.status({
                 fill:   msg.payload.on ? "green" : "gray",

@@ -42,6 +42,8 @@
             <option value='Basic'>Basic</option>
             <option value='Hue'>Hue</option>
             <option value='LIFX'>LIFX</option>
+            <option value='Homekit'>Homekit</option>
+            <option value='TasmotaMQTT'>Tasmota MQTT</option>
         </select>
     </div>
 
@@ -55,9 +57,11 @@
 
     <h3>Modes</h3>
     <ul>
-        <li><b>Basic</b> : raw mode, pretty much matches node-red-contrib-node-lifx format</li>
-        <li><b>Hue</b> : Hue mode, accepts messages from node-red-contrib-huemagic nodes</li>
-        <li><b>LIFX</b> : lifx mode, accepts messages from node-red-contrib-node-lifx nodes</li>
+        <li><b>Basic</b> : raw mode, pretty much matches <a target="https://flows.nodered.org/node/node-red-contrib-node-lifx" href="">node-red-contrib-node-lifx</a> format</li>
+        <li><b>Hue</b> : Hue mode, accepts messages from <a target="https://flows.nodered.org/node/node-red-contrib-huemagic" href="">node-red-contrib-huemagic</a> nodes</li>
+        <li><b>LIFX</b> : lifx mode, accepts messages from <a target="https://flows.nodered.org/node/node-red-contrib-node-lifx" href="">node-red-contrib-node-lifx</a> nodes</li>
+        <li><b>Homekit</b> : homekit mode, accepts messages from <a target="https://flows.nodered.org/node/node-red-contrib-homekit-bridged" href="">node-red-contrib-homekit-bridged</a> nodes (lights and switches)</li>
+        <li><b>Tasmota MQTT</b> : tasmota mqtt mode, accepts tasmota messages from mqtt nodes</li>
     </ul>
 
     <h3>Donate to show your support or gratitude</h3>

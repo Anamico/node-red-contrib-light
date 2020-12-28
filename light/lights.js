@@ -40,7 +40,7 @@ module.exports = function(RED) {
         node.setLightState = function(lightName, state) {
             const safeName = sanitised(lightName);
             const json = JSON.stringify(state);
-            node.log("setState: " + json);
+            node.debug("setState: " + json);
             node.context().global.set(node.nodeId + '_' + safeName, json);
         };
 
@@ -172,7 +172,7 @@ module.exports = function(RED) {
         };
 
         /**
-         * Deregister an alarm state change listener
+         * Deregister a light state change listener
          *
          * @param node
          */
